@@ -15,14 +15,14 @@ import open3d as o3d
 from scipy.optimize import linear_sum_assignment
 from segment_anything import sam_model_registry, SamPredictor, SamAutomaticMaskGenerator
 from .uncos_utils import iou_fn, iom_fn, intersection_fn, bfs_cluster, crop, overlay_masks, \
-    overlay_mask_simple, is_degenerated_mask, MaskWrapper, SegHypothesis, RegionHypothesis, MIN_AREA_PERCENTAGE
+    overlay_mask_simple, is_degenerated_mask, MaskWrapper, SegHypothesis, RegionHypothesis, MIN_AREA_PERCENTAGE, visualize_pointcloud
 from .groundedsam_wrapper import GroundedSAM
 
 IOU_THRES = 0.7
 SCORE_THR = 0.88  # .88 As used in SAM official implementation
 MAX_DEPTH = 3  # 1.2
 INTERSECTION_THRES = 500
-TABLE_INLIER_THR = .01
+TABLE_INLIER_THR = .001
 VERBOSE_DEBUG = False
 
 
@@ -460,7 +460,7 @@ class UncOS:
         return added_masks
 
     def get_table_or_background_mask(self, point_cloud, include_background=True, table_inlier_thr=TABLE_INLIER_THR,
-                                     far=3, near=.03, fast_inference=True):
+                                     far=3, near=.003, fast_inference=True):
         """
         Return the mask of table/background/non-foreground area.
         """
@@ -569,7 +569,7 @@ class UncOS:
             pred[np.where(~valid_cond)[0]] = 1
         pred_hwshape = pred.reshape(*point_cloud.shape[:2]).astype(bool)
         print(f'point cloud pre-processing done.')
-        # visualize_pointcloud(cloud.reshape(-1,3), pred_hwshape.reshape(-1))
+        # visualize_pointcloud(point_cloud.reshape(-1,3), pred_hwshape.reshape(-1))
         return pred_hwshape
 
     def get_table_or_background_mask_coloronly(self):
