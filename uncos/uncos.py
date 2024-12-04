@@ -462,7 +462,7 @@ class UncOS:
         return added_masks
 
     def get_table_or_background_mask(self, point_cloud, include_background=True, table_inlier_thr=TABLE_INLIER_THR,
-                                     far=3, near=.03, fast_inference=True):
+                                     far=3, near=.003, fast_inference=True):
         """
         Return the mask of table/background/non-foreground area.
         """
