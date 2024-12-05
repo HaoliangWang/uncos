@@ -1,18 +1,11 @@
 import io
-import trimesh
 import numpy as np
 from PIL import Image
 from os import listdir
 import h5py
-import json
-import random
 from os.path import isfile, join
-from functools import reduce
-import collections
 import os
-import glob
 import argparse
-
 
 def unproject_pixels(depth, cam_matrix, fx, fy):
     '''
@@ -70,12 +63,8 @@ scenario = args.scenario
 print(scenario)
 
 
-source_path = '/home/haoliangwang/data/physion/'
+source_path = '/home/haoliangwang/data/physion_hdf5'
 save_path = '/home/haoliangwang/uncos/haoliang/'
-
-vfov = 54.43222 
-near_plane = 0.1
-far_plane = 100
 
 scenario_path = join(source_path, scenario+'_all_movies')
 onlyhdf5 = [f for f in listdir(scenario_path) if isfile(join(scenario_path, f)) and join(scenario_path, f).endswith('.hdf5')]
@@ -89,35 +78,23 @@ for hdf5_file in onlyhdf5:
 
     hdf5_file_path = join(scenario_path, hdf5_file)
 
-    depth_arr = []
-    image_arr = []
     with h5py.File(hdf5_file_path, "r") as f:
+        vfov = 54.43222 
         # extract depth info
-        for key in f['frames'].keys():
-            depth = np.array(f['frames'][key]['images']['_depth_cam0'])
-            depth_arr.append(depth)
-            image = np.array(Image.open(io.BytesIO(f['frames'][key]['images']['_img_cam0'][:])))
-            image_arr.append(image)
-        depth_arr = np.asarray(depth_arr)
-        image_arr = np.asarray(image_arr)
-        height, width = image_arr.shape[1], image_arr.shape[2]
-
+        depth = np.array(f['frames']['0000']['images']['_depth_cam0'])
+        image = np.array(Image.open(io.BytesIO(f['frames']['0000']['images']['_img_cam0'][:])))
+        height, width = image.shape[0], image.shape[1]
         # extract camera info
         camera_matrix = np.array(f['frames']['0000']['camera_matrices']['camera_matrix_cam0']).reshape((4, 4))
 
-        # Calculate the intrinsic matrix from vertical_fov.
-        # Motice that hfov and vfov are different if height != width
-        # We can also get the intrinsic matrix from opengl's perspective matrix.
-        # http://kgeorge.github.io/2014/03/08/calculating-opengl-perspective-matrix-from-opencv-intrinsic-matrix
         vfov = vfov / 180.0 * np.pi
         tan_half_vfov = np.tan(vfov / 2.0)
         tan_half_hfov = tan_half_vfov * width / float(height)
         fx = width / 2.0 / tan_half_hfov  # focal length in pixel space
         fy = height / 2.0 / tan_half_vfov
 
-    frame = 0
-    pc = unproject_pixels(depth_arr[frame], camera_matrix, fx, fy)
+    pc = unproject_pixels(depth, camera_matrix, fx, fy)
     pc[:,[2,1]] = pc[:,[1,2]]
     non_flat = pc.reshape(width, height, 3)
-    rgb_pc = np.concatenate([image_arr[frame], non_flat], axis=-1)
+    rgb_pc = np.concatenate([image, non_flat], axis=-1)
     np.save(f'{folder_name}/{trial_name}.npy', rgb_pc)
