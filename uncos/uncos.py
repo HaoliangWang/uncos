@@ -22,7 +22,7 @@ IOU_THRES = 0.7
 SCORE_THR = 0.88  # .88 As used in SAM official implementation
 MAX_DEPTH = 3  # 1.2
 INTERSECTION_THRES = 500
-TABLE_INLIER_THR = .001
+TABLE_INLIER_THR = .01
 VERBOSE_DEBUG = False
 
 
@@ -460,7 +460,7 @@ class UncOS:
         return added_masks
 
     def get_table_or_background_mask(self, point_cloud, include_background=True, table_inlier_thr=TABLE_INLIER_THR,
-                                     far=3, near=.003, fast_inference=True):
+                                     far=3, near=.03, fast_inference=True):
         """
         Return the mask of table/background/non-foreground area.
         """
