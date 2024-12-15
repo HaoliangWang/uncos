@@ -15,7 +15,7 @@ def makedir(path):
 def main(path, vis=True, most_likely=False):
     test_most_likely = most_likely
 
-    demo_files_list = glob.glob(os.path.join(os.path.dirname(__file__), f"../haoliang/{path}/**.npy"))
+    demo_files_list = glob.glob(os.path.join(os.path.dirname(__file__), f"../haoliang/collide/{path}/**.npy"))
     save_path = f"../haoliang/{path}_results"
     makedir(save_path)
     uncos = UncOS()
@@ -43,7 +43,8 @@ def main(path, vis=True, most_likely=False):
         except Exception as e:
             print(f"!!!!!!Problematic {stim_name}")
             print(e)
-            shutil.move(demo_file_path, f"../haoliang/problematic/{stim_name}_npy")
+            makedir(f"../haoliang/problematic/{path}/")
+            shutil.move(demo_file_path, f"../haoliang/problematic/{path}/{stim_name}.npy")
             pass
 
 if __name__ == "__main__":
@@ -52,7 +53,8 @@ if __name__ == "__main__":
     # parser.add_argument('-v', '--vis', action='store_true', help='Visualize the segmentation result.')
     # parser.add_argument('-m', '--mostlikely', action='store_true', help='Return most likely result.')
     # args = parser.parse_args()
-    for path in ["collide", "contain", "drop", "dominoes", "link", "roll", "support"]:
-        print(f"**********************{path}**********************")
-        main(path=path, vis=False, most_likely=False)
+    # for path in ["collide", "contain", "drop", "dominoes", "link", "roll", "support"]:
+    for path in range(8, 15):
+        print(f"**********************{path+1}**********************")
+        main(path=path+1, vis=False, most_likely=False)
     # main(path=args.path, vis=args.vis, most_likely=args.mostlikely)
