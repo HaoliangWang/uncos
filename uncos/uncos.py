@@ -307,8 +307,8 @@ class UncOS:
                 hypothesis = wholearea_hypothesis
                 return hypothesis
             loop_i += 1
-            if hypothesis.mask_num > 10:
-                breakpoint()
+            # if hypothesis.mask_num > 10:
+                # breakpoint()
             try:
                 sampled_point = self.sample_points_in_mask(remaining_area, 1)[0]
             except Exception as e:
