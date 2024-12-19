@@ -466,7 +466,7 @@ class UncOS:
         """
         Return the mask of table/background/non-foreground area.
         """
-        print(f'point cloud pre-processing...')
+        # print(f'point cloud pre-processing...')
         pred = np.zeros((point_cloud.shape[0], point_cloud.shape[1]))
         if pred.shape[1] == 3:
             raise RuntimeError('point_cloud needs to have the same shape as rgb (H W 3)')
@@ -480,7 +480,7 @@ class UncOS:
             frame = 'camera'
             valid_cond = np.logical_and(point_cloud.reshape(-1, 3)[..., 2] > near,
                                         point_cloud.reshape(-1, 3)[..., 2] < far)
-        print(f'point cloud in {frame} frame')
+        # print(f'point cloud in {frame} frame')
         valid_cond = np.logical_and(valid_cond, ~(np.isnan(point_cloud.reshape(-1, 3)).any(axis=1)))
         valid_idx = np.where(valid_cond)[0]  # remove points too close to the camera
 
@@ -567,7 +567,7 @@ class UncOS:
         if include_background:
             pred[np.where(~valid_cond)[0]] = 1
         pred_hwshape = pred.reshape(*point_cloud.shape[:2]).astype(bool)
-        print(f'point cloud pre-processing done.')
+        # print(f'point cloud pre-processing done.')
         # visualize_pointcloud(point_cloud.reshape(-1,3), pred_hwshape.reshape(-1))
         return pred_hwshape
 
@@ -813,3 +813,4 @@ class UncOS:
             if save_path is None:
                 save_path = 'uncos_result.png'
             plt.savefig(save_path)
+            plt.close('all')
