@@ -7,6 +7,7 @@ from os.path import isfile, join
 import os
 import argparse
 
+
 def unproject_pixels(depth, cam_matrix, fx, fy):
     '''
     pts: [N, 2] pixel coords
@@ -63,8 +64,14 @@ scenario = args.scenario
 print(scenario)
 
 
-source_path = '/home/haoliangwang/data/physion_hdf5'
-save_path = '/home/haoliangwang/uncos/haoliang/'
+source_path = '/ccn2/u/rmvenkat/data/testing_physion/regenerate_from_old_commit/test_humans_consolidated/lf_0/'
+save_path = '/ccn2/u/haw027/b3d_ipe/uncos_vis/'
+
+if scenario == 'collide':
+    FINAL_T = 15
+else:
+    FINAL_T = 45
+w = h = 350
 
 scenario_path = join(source_path, scenario+'_all_movies')
 onlyhdf5 = [f for f in listdir(scenario_path) if isfile(join(scenario_path, f)) and join(scenario_path, f).endswith('.hdf5')]
@@ -72,29 +79,43 @@ for hdf5_file in onlyhdf5:
     trial_name = '_'.join(hdf5_file.split('/')[-2:])[:-5]
     if trial_name.endswith('temp'):
         continue
-    folder_name = join(save_path, scenario)
-    makedir(folder_name)
     print('\t', trial_name)
 
     hdf5_file_path = join(scenario_path, hdf5_file)
-
+    depth_arr = []
+    image_arr = []
     with h5py.File(hdf5_file_path, "r") as f:
-        vfov = 54.43222 
-        # extract depth info
-        depth = np.array(f['frames']['0000']['images']['_depth_cam0'])
-        image = np.array(Image.open(io.BytesIO(f['frames']['0000']['images']['_img_cam0'][:])))
-        height, width = image.shape[0], image.shape[1]
+        for key in f['frames'].keys():
+            if int(key)>FINAL_T:
+                continue
+            depth = np.array(Image.fromarray(np.array(f['frames'][key]['images']['_depth_cam0'])).resize((w, h)))
+            depth_arr.append(depth)
+            image = np.array(Image.open(io.BytesIO(f['frames'][key]['images']['_img_cam0'][:])).resize((w, h)))
+            image_arr.append(image)
+        depth_arr = np.asarray(depth_arr)
+        image_arr = np.asarray(image_arr)
+        height, width = image_arr.shape[1], image_arr.shape[2]
+
+        # # extract depth info
+        # depth = np.array(f['frames']['0000']['images']['_depth_cam0'])
+        # image = np.array(Image.open(io.BytesIO(f['frames']['0000']['images']['_img_cam0'][:])))
+        # height, width = image.shape[0], image.shape[1]
+
         # extract camera info
         camera_matrix = np.array(f['frames']['0000']['camera_matrices']['camera_matrix_cam0']).reshape((4, 4))
 
-        vfov = vfov / 180.0 * np.pi
+        vfov = 54.43222 / 180.0 * np.pi
         tan_half_vfov = np.tan(vfov / 2.0)
         tan_half_hfov = tan_half_vfov * width / float(height)
         fx = width / 2.0 / tan_half_hfov  # focal length in pixel space
         fy = height / 2.0 / tan_half_vfov
 
-    pc = unproject_pixels(depth, camera_matrix, fx, fy)
-    pc[:,[2,1]] = pc[:,[1,2]]
-    non_flat = pc.reshape(width, height, 3)
-    rgb_pc = np.concatenate([image, non_flat], axis=-1)
-    np.save(f'{folder_name}/{trial_name}.npy', rgb_pc)
+    for i, (depth, image) in enumerate(zip(depth_arr, image_arr)):
+        folder_name = join(save_path, scenario, str(i))
+        makedir(folder_name)
+        pc = unproject_pixels(depth, camera_matrix, fx, fy)
+        pc[:,[2,1]] = pc[:,[1,2]]
+        non_flat = pc.reshape(width, height, 3)
+        rgb_pc = np.concatenate([image, non_flat], axis=-1)
+        np.save(f'{folder_name}/{trial_name}.npy', rgb_pc)
+        # np.save(f'/home/haoliangwang/uncos/haoliang/test/{trial_name}.npy', rgb_pc)
