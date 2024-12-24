@@ -12,5 +12,5 @@ TABLE_INLIER_THR = .01
 VERBOSE_DEBUG = False
 
 # Backbone Params
-USE_SAM2 = False
+USE_SAM2 = True
 SAM_CONF_SCORE_THR = .8 if USE_SAM2 else 0.88 # As used in SAM official implementation
