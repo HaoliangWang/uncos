@@ -14,8 +14,8 @@ import open3d as o3d
 
 from scipy.optimize import linear_sum_assignment
 from segment_anything import sam_model_registry, SamPredictor, SamAutomaticMaskGenerator
-from .uncos_utils import iou_fn, iom_fn, intersection_fn, bfs_cluster, crop, overlay_masks, visualize_pointcloud, \
-    overlay_mask_simple, is_degenerated_mask, MaskWrapper, SegHypothesis, RegionHypothesis
+from .uncos_utils import iou_fn, iom_fn, intersection_fn, bfs_cluster, crop, overlay_masks, \
+    overlay_mask_simple, is_degenerated_mask, MaskWrapper, SegHypothesis, RegionHypothesis, MIN_AREA_PERCENTAGE, visualize_pointcloud
 from .groundedsam_wrapper import GroundedSAM
 from .config import IOU_THRES, SAM_CONF_SCORE_THR, MAX_DEPTH, INTERSECTION_THRES, TABLE_INLIER_THR, MIN_AREA_PERCENTAGE, \
                     USE_SAM2, UNCOS_CKPT_DIR_PATH, SAM2_CKPT_PATH
