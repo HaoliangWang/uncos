@@ -15,6 +15,7 @@ def main(vis=True, most_likely=False):
         rgb_im, pcd = load_data_npy(demo_file_path)
         pred_masks_boolarray, uncertain_hypotheses = uncos.segment_scene(rgb_im, pcd,
                                                                          return_most_likely_only=test_most_likely,
+                                                                         pointcloud_frame='world',
                                                                          n_seg_hypotheses_trial=12)
         if vis:
             uncos.visualize_confident_uncertain(pred_masks_boolarray, uncertain_hypotheses)

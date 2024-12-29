@@ -122,6 +122,7 @@ for hdf5_file in onlyhdf5:
             try:
                 pred_masks_boolarray, uncertain_hypotheses = uncos.segment_scene(rgb_im, pcd,
                                                                                 return_most_likely_only=False,
+                                                                                pointcloud_frame='world',
                                                                                 n_seg_hypotheses_trial=12)
                 uncos.visualize_confident_uncertain(pred_masks_boolarray, uncertain_hypotheses,
                                                         show=False, save_path=f'{folder_name}/{int(key)}.png')
