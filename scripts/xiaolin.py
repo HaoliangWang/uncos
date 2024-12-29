@@ -8,7 +8,7 @@ from uncos.uncos_utils import load_data_npy
 def main(vis=True, most_likely=False):
     test_most_likely = most_likely
 
-    demo_files_list = glob.glob(os.path.join(os.path.dirname(__file__), f"../demo_files/**.npy"))
+    demo_files_list = glob.glob(os.path.join(os.path.dirname(__file__), f"/ccn2/u/haw027/b3d_ipe/uncos_results/problematic/contain/**.npy"))
     uncos = UncOS()
     for demo_file_path in demo_files_list:
         print(f"Testing {demo_file_path}")
