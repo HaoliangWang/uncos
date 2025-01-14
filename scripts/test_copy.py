@@ -79,7 +79,7 @@ print(scenario)
 # print(f"GPU: {gpu}")
 # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 # os.environ["CUDA_VISIBLE_DEVICES"] = f"{gpu}"
-uncos = UncOS()
+uncos = UncOS(device='cuda:1')
 
 source_path = '/ccn2/u/rmvenkat/data/testing_physion/regenerate_from_old_commit/test_humans_consolidated/lf_0/'
 save_path = f'/ccn2/u/haw027/b3d_ipe/uncos_results/'
